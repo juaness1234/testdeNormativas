@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Sistema Integral de Evaluación Digital de Conocimiento</title>
+  <style>
+    body{font-family:Arial,Helvetica,sans-serif;background:#f4f4f8;margin:0;padding:20px;color:#222}
+    h1{text-align:center}
+    .card{background:#fff;padding:20px;border-radius:12px;max-width:900px;margin:0 auto;box-shadow:0 4px 14px rgba(0,0,0,0.1)}
+    .module{padding:15px;border:1px solid #ddd;margin-bottom:15px;border-radius:10px;background:#fafafa}
+    button{padding:10px 18px;border:none;border-radius:8px;cursor:pointer;font-weight:bold;background:#005bbb;color:white}
+    button:hover{background:#004999}
+    .timer{font-size:1.2rem;font-weight:bold;margin-bottom:10px;color:#b30000}
+    .question{margin-bottom:12px}
+    .options label{display:block;background:#eee;padding:8px;border-radius:8px;margin:4px 0;cursor:pointer}
+    #quizBox{display:none}
+    #result{display:none;padding:20px;background:#e8ffe8;border-radius:10px;margin-top:20px}
+  </style>
+</head>
+<body>
+  <h1>Sistema Integral de Evaluación Digital de Conocimiento</h1>
+
+  <div class="card">
+    <h2>Módulo: Normativa Básica</h2>
+    <p><strong>Contenido evaluado:</strong> Resolución 40595, Ley 769/2002, Decreto 1079/2015</p>
+    <p><strong>Formato:</strong> Quiz interactivo</p>
+    <p><strong>Duración:</strong> 20 minutos</p>
+    <button onclick="startQuiz()">Iniciar Evaluación</button>
+  </div>
+
+  <div id="quizBox" class="card">
+    <div class="timer" id="timer">Tiempo restante: 20:00</div>
+    <div id="quizContent"></div>
+    <button onclick="nextQuestion()" id="nextBtn">Siguiente</button>
+    <button onclick="finishQuiz()" id="finishBtn" style="display:none;background:#007b00">Finalizar</button>
+  </div>
+
+  <div id="result" class="card"></div>
+
+<script>
+  const questions = [
+    {q:"¿Qué ley corresponde al Código Nacional de Tránsito en Colombia?", opts:["Ley 30/1986","Ley 769/2002","Ley 101/1993","Ley 532/1999"], correct:1},
+    {q:"La Resolución 40595 establece lineamientos para:", opts:["Normas de señalización peatonal","Licencias de conducción y exámenes","Velocidades máximas urbanas","Uso obligatorio de cinturón"], correct:1},
+    {q:"El Decreto 1079/2015 compila normativas relacionadas con:", opts:["Transporte terrestre y tránsito","Normas ambientales","Impuestos vehiculares","Operación de transporte aéreo"], correct:0},
+    {q:"Según la Ley 769/2002, conducir bajo efectos de alcohol es:", opts:["Permitido con límites","Totalmente prohibido","Solo prohibido para transporte público","No regulado"], correct:1}
+  ];
+
+  let current = 0;
+  let answers = [];
+  let timeLeft = 20 * 60;
+  let timerInterval;
+
+  function startQuiz(){
+    document.getElementById("quizBox").style.display = "block";
+    renderQuestion();
+    timerInterval = setInterval(updateTimer,1000);
+  }
+
+  function updateTimer(){
+    let m = Math.floor(timeLeft / 60);
+    let s = timeLeft % 60;
+    if(s < 10) s = "0" + s;
+    document.getElementById("timer").innerText = `Tiempo restante: ${m}:${s}`;
+    timeLeft--;
+    if(timeLeft < 0){ finishQuiz(); }
+  }
+
+  function renderQuestion(){
+    const q = questions[current];
+    const container = document.getElementById("quizContent");
+    container.innerHTML = `<h3>Pregunta ${current+1} de ${questions.length}</h3>
+      <p class="question">${q.q}</p>`;
+    q.opts.forEach((op,i)=>{
+      container.innerHTML += `<div class="options"><label>
+        <input type="radio" name="opt" value="${i}"> ${op}
+      </label></div>`;
+    });
+
+    if(current === questions.length-1){
+      document.getElementById("nextBtn").style.display = "none";
+      document.getElementById("finishBtn").style.display = "inline-block";
+    }
+  }
+
+  function nextQuestion(){
+    const sel = document.querySelector("input[name='opt']:checked");
+    if(!sel){ alert("Debes seleccionar una opción antes de continuar."); return; }
+
+    answers[current] = parseInt(sel.value);
+    current++;
+    renderQuestion();
+  }
+
+  function finishQuiz(){
+    clearInterval(timerInterval);
+
+    const sel = document.querySelector("input[name='opt']:checked");
+    if(sel) answers[current] = parseInt(sel.value);
+
+    let score = 0;
+    questions.forEach((q,i)=>{ if(answers[i] === q.correct) score++; });
+
+    const result = document.getElementById("result");
+    result.style.display = "block";
+    result.innerHTML = `<h2>Resultado Final</h2>
+      <p><strong>Puntaje:</strong> ${score} / ${questions.length}</p>
+      <p><strong>Desempeño:</strong> ${((score/questions.length)*100).toFixed(1)}%</p>`;
+
+    document.getElementById("quizBox").style.display = "none";
+  }
+</script>
+</body>
+</html>
