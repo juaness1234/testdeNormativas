@@ -1,114 +1,939 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Sistema Integral de Evaluación Digital de Conocimiento</title>
-  <style>
-    body{font-family:Arial,Helvetica,sans-serif;background:#f4f4f8;margin:0;padding:20px;color:#222}
-    h1{text-align:center}
-    .card{background:#fff;padding:20px;border-radius:12px;max-width:900px;margin:0 auto;box-shadow:0 4px 14px rgba(0,0,0,0.1)}
-    .module{padding:15px;border:1px solid #ddd;margin-bottom:15px;border-radius:10px;background:#fafafa}
-    button{padding:10px 18px;border:none;border-radius:8px;cursor:pointer;font-weight:bold;background:#005bbb;color:white}
-    button:hover{background:#004999}
-    .timer{font-size:1.2rem;font-weight:bold;margin-bottom:10px;color:#b30000}
-    .question{margin-bottom:12px}
-    .options label{display:block;background:#eee;padding:8px;border-radius:8px;margin:4px 0;cursor:pointer}
-    #quizBox{display:none}
-    #result{display:none;padding:20px;background:#e8ffe8;border-radius:10px;margin-top:20px}
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema Integral de Evaluación Digital - Normativa Básica</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        
+        header {
+            background: linear-gradient(135deg, #2c3e50, #1a2530);
+            color: white;
+            padding: 25px 30px;
+            text-align: center;
+        }
+        
+        h1 {
+            font-size: 28px;
+            margin-bottom: 8px;
+        }
+        
+        .subtitle {
+            font-size: 18px;
+            opacity: 0.9;
+            font-weight: 300;
+        }
+        
+        .info-panel {
+            display: flex;
+            justify-content: space-between;
+            background-color: #e8f4fc;
+            padding: 15px 30px;
+            border-bottom: 1px solid #d0e3f1;
+        }
+        
+        .info-item {
+            text-align: center;
+        }
+        
+        .info-label {
+            font-size: 14px;
+            color: #555;
+            margin-bottom: 5px;
+        }
+        
+        .info-value {
+            font-size: 18px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        
+        .timer {
+            color: #e74c3c;
+        }
+        
+        .content {
+            padding: 30px;
+        }
+        
+        .module-info {
+            background-color: #f8f9fa;
+            border-left: 4px solid #3498db;
+            padding: 20px;
+            margin-bottom: 30px;
+            border-radius: 0 5px 5px 0;
+        }
+        
+        .module-title {
+            font-size: 22px;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        
+        .module-description {
+            color: #555;
+        }
+        
+        .question-container {
+            display: none;
+            margin-bottom: 30px;
+        }
+        
+        .question-container.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .question-number {
+            display: inline-block;
+            background-color: #3498db;
+            color: white;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 36px;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+        
+        .question-text {
+            font-size: 20px;
+            margin-bottom: 25px;
+            color: #2c3e50;
+        }
+        
+        .options-container {
+            display: grid;
+            gap: 12px;
+        }
+        
+        .option {
+            background-color: #f8f9fa;
+            border: 2px solid #e1e5eb;
+            border-radius: 8px;
+            padding: 16px 20px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 16px;
+        }
+        
+        .option:hover {
+            background-color: #eef5ff;
+            border-color: #3498db;
+        }
+        
+        .option.selected {
+            background-color: #e1f0ff;
+            border-color: #3498db;
+            color: #2c3e50;
+        }
+        
+        .option.correct {
+            background-color: #d4edda;
+            border-color: #28a745;
+            color: #155724;
+        }
+        
+        .option.incorrect {
+            background-color: #f8d7da;
+            border-color: #dc3545;
+            color: #721c24;
+        }
+        
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+        }
+        
+        button {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-prev {
+            background-color: #6c757d;
+            color: white;
+        }
+        
+        .btn-prev:hover {
+            background-color: #5a6268;
+        }
+        
+        .btn-next {
+            background-color: #3498db;
+            color: white;
+        }
+        
+        .btn-next:hover {
+            background-color: #2980b9;
+        }
+        
+        .btn-submit {
+            background-color: #27ae60;
+            color: white;
+        }
+        
+        .btn-submit:hover {
+            background-color: #219653;
+        }
+        
+        .btn-restart {
+            background-color: #e74c3c;
+            color: white;
+            margin: 0 auto;
+            display: block;
+        }
+        
+        .btn-restart:hover {
+            background-color: #c0392b;
+        }
+        
+        .results-container {
+            display: none;
+            text-align: center;
+            padding: 40px 20px;
+        }
+        
+        .results-container.active {
+            display: block;
+        }
+        
+        .results-title {
+            font-size: 32px;
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
+        
+        .score-circle {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            background-color: #f8f9fa;
+            margin: 0 auto 30px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            border: 10px solid;
+            font-weight: bold;
+        }
+        
+        .score-text {
+            font-size: 20px;
+            margin-bottom: 5px;
+        }
+        
+        .score-value {
+            font-size: 42px;
+        }
+        
+        .score-pass {
+            border-color: #27ae60;
+            color: #27ae60;
+        }
+        
+        .score-fail {
+            border-color: #e74c3c;
+            color: #e74c3c;
+        }
+        
+        .feedback {
+            margin-top: 20px;
+            font-size: 18px;
+            color: #555;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+            line-height: 1.6;
+        }
+        
+        .progress-bar {
+            height: 8px;
+            background-color: #e1e5eb;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+        
+        .progress {
+            height: 100%;
+            background-color: #3498db;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 20px;
+            color: #7f8c8d;
+            font-size: 14px;
+            border-top: 1px solid #eee;
+            margin-top: 30px;
+        }
+        
+        @media (max-width: 768px) {
+            .info-panel {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .options-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .navigation {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            button {
+                width: 100%;
+            }
+            
+            .btn-prev {
+                order: 2;
+            }
+            
+            .btn-next {
+                order: 1;
+            }
+        }
+    </style>
 </head>
 <body>
-  <h1>Sistema Integral de Evaluación Digital de Conocimiento</h1>
+    <div class="container">
+        <header>
+            <h1>Sistema Integral de Evaluación Digital de Conocimiento</h1>
+            <div class="subtitle">Módulo: Normativa Básica de Tránsito</div>
+        </header>
+        
+        <div class="info-panel">
+            <div class="info-item">
+                <div class="info-label">Módulo</div>
+                <div class="info-value">Normativa Básica</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">Contenido Evaluado</div>
+                <div class="info-value">Resolución 40595, Ley 769/2002, Decreto 1079/2015</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">Duración</div>
+                <div class="info-value timer" id="timer">20:00</div>
+            </div>
+        </div>
+        
+        <div class="content">
+            <div class="module-info">
+                <h2 class="module-title">Evaluación de Normativa Básica de Tránsito</h2>
+                <p class="module-description">
+                    Este cuestionario evalúa su conocimiento sobre la Resolución 40595, Ley 769 de 2002 (Código Nacional de Tránsito) y el Decreto 1079 de 2015. 
+                    Consta de 10 preguntas de opción múltiple. Debe responder correctamente al menos 7 preguntas para aprobar. 
+                    Tiene un tiempo límite de 20 minutos para completar la evaluación.
+                </p>
+            </div>
+            
+            <div class="progress-bar">
+                <div class="progress" id="progress-bar"></div>
+            </div>
+            
+            <div id="start-container">
+                <h2 style="text-align: center; margin-bottom: 20px;">Instrucciones del Quiz</h2>
+                <ul style="margin-bottom: 30px; padding-left: 20px;">
+                    <li style="margin-bottom: 10px;">Lea cada pregunta cuidadosamente antes de responder.</li>
+                    <li style="margin-bottom: 10px;">Seleccione solo una respuesta por pregunta.</li>
+                    <li style="margin-bottom: 10px;">Puede navegar entre preguntas usando los botones "Anterior" y "Siguiente".</li>
+                    <li style="margin-bottom: 10px;">El tiempo comenzará cuando presione el botón "Comenzar Evaluación".</li>
+                    <li style="margin-bottom: 10px;">Para aprobar debe obtener al menos 7 respuestas correctas de 10.</li>
+                </ul>
+                <button id="btn-start" class="btn-next" style="margin: 0 auto; display: block;">Comenzar Evaluación</button>
+            </div>
+            
+            <div id="quiz-container" style="display: none;">
+                <div id="question-1" class="question-container active">
+                    <div class="question-number">1</div>
+                    <div class="question-text">Según la Ley 769 de 2002 (Código Nacional de Tránsito), ¿cuál es la velocidad máxima permitida en zona urbana para vehículos particulares?</div>
+                    <div class="options-container">
+                        <div class="option" data-index="0">30 km/h</div>
+                        <div class="option" data-index="1">50 km/h</div>
+                        <div class="option" data-index="2">60 km/h</div>
+                        <div class="option" data-index="3">80 km/h</div>
+                    </div>
+                </div>
+                
+                <div id="question-2" class="question-container">
+                    <div class="question-number">2</div>
+                    <div class="question-text">De acuerdo con la Resolución 40595, ¿cuál es el porcentaje máximo de alcohol en sangre permitido para conductores particulares en Colombia?</div>
+                    <div class="options-container">
+                        <div class="option" data-index="0">0.2 gramos por litro de sangre</div>
+                        <div class="option" data-index="1">0.3 gramos por litro de sangre</div>
+                        <div class="option" data-index="2">0.4 gramos por litro de sangre</div>
+                        <div class="option" data-index="3">0.5 gramos por litro de sangre</div>
+                    </div>
+                </div>
+                
+                <div id="question-3" class="question-container">
+                    <div class="question-number">3</div>
+                    <div class="question-text">Según el Decreto 1079 de 2015, ¿qué documento debe portar obligatoriamente el conductor de un vehículo particular?</div>
+                    <div class="options-container">
+                        <div class="option" data-index="0">Licencia de conducción, SOAT y tarjeta de propiedad</div>
+                        <div class="option" data-index="1">Licencia de conducción, SOAT y certificado de revisión técnico-mecánica</div>
+                        <div class="option" data-index="2">Licencia de conducción, SOAT y permiso de circulación</div>
+                        <div class="option" data-index="3">Licencia de conducción, SOAT y cédula de ciudadanía</div>
+                    </div>
+                </div>
+                
+                <div id="question-4" class="question-container">
+                    <div class="question-number">4</div>
+                    <div class="question-text">De acuerdo con la Ley 769 de 2002, ¿cuál es la sanción por conducir en estado de embriaguez por primera vez?</div>
+                    <div class="options-container">
+                        <div class="option" data-index="0">Multa y suspensión de la licencia de conducción por 6 meses</div>
+                        <div class="option" data-index="1">Multa y suspensión de la licencia de conducción por 1 año</div>
+                        <div class="option" data-index="2">Multa y suspensión de la licencia de conducción por 2 años</div>
+                        <div class="option" data-index="3">Multa y suspensión de la licencia de conducción por 5 años</div>
+                    </div>
+                </div>
+                
+                <div id="question-5" class="question-container">
+                    <div class="question-number">5</div>
+                    <div class="question-text">Según la Resolución 40595, ¿cuál es la distancia mínima que debe mantener un vehículo respecto al que le antecede en carretera?</div>
+                    <div class="options-container">
+                        <div class="option" data-index="0">10 metros</div>
+                        <div class="option" data-index="1">20 metros</div>
+                        <div class="option" data-index="2">30 metros</div>
+                        <div class="option" data-index="3">Depende de la velocidad, se calcula con la regla de los 2 segundos</div>
+                    </div>
+                </div>
+                
+                <div id="question-6" class="question-container">
+                    <div class="question-number">6</div>
+                    <div class="question-text">De acuerdo con el Decreto 1079 de 2015, ¿cada cuánto tiempo debe renovarse la licencia de conducción para categoría B1 (vehículos particulares)?</div>
+                    <div class="options-container">
+                        <div class="option" data-index="0">Cada 5 años</div>
+                        <div class="option" data-index="1">Cada 3 años</div>
+                        <div class="option" data-index="2">Cada 10 años</div>
+                        <div class="option" data-index="3">Cada 1 año</div>
+                    </div>
+                </div>
+                
+                <div id="question-7" class="question-container">
+                    <div class="question-number">7</div>
+                    <div class="question-text">Según la Ley 769 de 2002, ¿en qué casos está permitido el uso de las luces intermitentes o balizas de un vehículo?</div>
+                    <div class="options-container">
+                        <div class="option" data-index="0">Solo en caso de emergencia o cuando el vehículo esté detenido en la vía</div>
+                        <div class="option" data-index="1">Cuando se estacione en lugares no permitidos</div>
+                        <div class="option" data-index="2">Para indicar que se va a cambiar de carril</div>
+                        <div class="option" data-index="3">Para indicar que se va a dar una vuelta en U</div>
+                    </div>
+                </div>
+                
+                <div id="question-8" class="question-container">
+                    <div class="question-number">8</div>
+                    <div class="question-text">De acuerdo con la Resolución 40595, ¿qué edad mínima se requiere para obtener una licencia de conducción para motocicletas de baja cilindrada (hasta 125cc)?</div>
+                    <div class="options-container">
+                        <div class="option" data-index="0">14 años</div>
+                        <div class="option" data-index="1">16 años</div>
+                        <div class="option" data-index="2">18 años</div>
+                        <div class="option" data-index="3">21 años</div>
+                    </div>
+                </div>
+                
+                <div id="question-9" class="question-container">
+                    <div class="question-number">9</div>
+                    <div class="question-text">Según el Decreto 1079 de 2015, ¿qué sanción aplica por no portar el SOAT vigente?</div>
+                    <div class="options-container">
+                        <div class="option" data-index="0">Multa equivalente a 15 salarios mínimos legales diarios</div>
+                        <div class="option" data-index="1">Multa equivalente a 30 salarios mínimos legales diarios</div>
+                        <div class="option" data-index="2">Inmovilización del vehículo</div>
+                        <div class="option" data-index="3">Todas las anteriores</div>
+                    </div>
+                </div>
+                
+                <div id="question-10" class="question-container">
+                    <div class="question-number">10</div>
+                    <div class="question-text">De acuerdo con la Ley 769 de 2002, ¿qué conductores están obligados a utilizar el cinturón de seguridad?</div>
+                    <div class="options-container">
+                        <div class="option" data-index="0">Solo el conductor</div>
+                        <div class="option" data-index="1">El conductor y el copiloto</div>
+                        <div class="option" data-index="2">Todos los ocupantes del vehículo</div>
+                        <div class="option" data-index="3">Solo los ocupantes de los asientos delanteros</div>
+                    </div>
+                </div>
+                
+                <div class="navigation">
+                    <button id="btn-prev" class="btn-prev">Anterior</button>
+                    <button id="btn-next" class="btn-next">Siguiente</button>
+                    <button id="btn-submit" class="btn-submit" style="display: none;">Finalizar Evaluación</button>
+                </div>
+            </div>
+            
+            <div id="results-container" class="results-container">
+                <h2 class="results-title">Resultados de la Evaluación</h2>
+                <div id="score-circle" class="score-circle">
+                    <div class="score-text">Puntaje</div>
+                    <div class="score-value">0/10</div>
+                </div>
+                <div id="result-feedback" class="feedback">
+                    <!-- El feedback se cargará aquí -->
+                </div>
+                <button id="btn-restart" class="btn-restart">Realizar otra evaluación</button>
+            </div>
+        </div>
+        
+        <footer>
+            <p>Sistema Integral de Evaluación Digital de Conocimiento &copy; 2023 - Módulo Normativa Básica</p>
+            <p>Resolución 40595, Ley 769/2002, Decreto 1079/2015</p>
+        </footer>
+    </div>
 
-  <div class="card">
-    <h2>Módulo: Normativa Básica</h2>
-    <p><strong>Contenido evaluado:</strong> Resolución 40595, Ley 769/2002, Decreto 1079/2015</p>
-    <p><strong>Formato:</strong> Quiz interactivo</p>
-    <p><strong>Duración:</strong> 20 minutos</p>
-    <button onclick="startQuiz()">Iniciar Evaluación</button>
-  </div>
+    <script>
+        // Datos del quiz
+        const quizData = {
+            questions: [
+                {
+                    question: "Según la Ley 769 de 2002 (Código Nacional de Tránsito), ¿cuál es la velocidad máxima permitida en zona urbana para vehículos particulares?",
+                    options: [
+                        "30 km/h",
+                        "50 km/h",
+                        "60 km/h",
+                        "80 km/h"
+                    ],
+                    correctAnswer: 2,
+                    explanation: "Según el artículo 106 de la Ley 769 de 2002, la velocidad máxima en zona urbana para vehículos particulares es de 60 km/h, salvo que las autoridades de tránsito indiquen una velocidad diferente mediante señalización."
+                },
+                {
+                    question: "De acuerdo con la Resolución 40595, ¿cuál es el porcentaje máximo de alcohol en sangre permitido para conductores particulares en Colombia?",
+                    options: [
+                        "0.2 gramos por litro de sangre",
+                        "0.3 gramos por litro de sangre",
+                        "0.4 gramos por litro de sangre",
+                        "0.5 gramos por litro de sangre"
+                    ],
+                    correctAnswer: 1,
+                    explanation: "La Resolución 40595 establece que el límite máximo de alcohol en sangre para conductores particulares es de 0.3 gramos por litro de sangre. Para conductores de servicio público es 0.0 gramos por litro."
+                },
+                {
+                    question: "Según el Decreto 1079 de 2015, ¿qué documento debe portar obligatoriamente el conductor de un vehículo particular?",
+                    options: [
+                        "Licencia de conducción, SOAT y tarjeta de propiedad",
+                        "Licencia de conducción, SOAT y certificado de revisión técnico-mecánica",
+                        "Licencia de conducción, SOAT y permiso de circulación",
+                        "Licencia de conducción, SOAT y cédula de ciudadanía"
+                    ],
+                    correctAnswer: 1,
+                    explanation: "El Decreto 1079 de 2015 establece que todo conductor debe portar: licencia de conducción, SOAT vigente y certificado de revisión técnico-mecánica. La tarjeta de propiedad no es obligatoria portarla."
+                },
+                {
+                    question: "De acuerdo con la Ley 769 de 2002, ¿cuál es la sanción por conducir en estado de embriaguez por primera vez?",
+                    options: [
+                        "Multa y suspensión de la licencia de conducción por 6 meses",
+                        "Multa y suspensión de la licencia de conducción por 1 año",
+                        "Multa y suspensión de la licencia de conducción por 2 años",
+                        "Multa y suspensión de la licencia de conducción por 5 años"
+                    ],
+                    correctAnswer: 1,
+                    explanation: "Según el artículo 131 de la Ley 769 de 2002, conducir en estado de embriaguez por primera vez acarrea multa e inmovilización del vehículo, y suspensión de la licencia de conducción entre 1 y 3 años."
+                },
+                {
+                    question: "Según la Resolución 40595, ¿cuál es la distancia mínima que debe mantener un vehículo respecto al que le antecede en carretera?",
+                    options: [
+                        "10 metros",
+                        "20 metros",
+                        "30 metros",
+                        "Depende de la velocidad, se calcula con la regla de los 2 segundos"
+                    ],
+                    correctAnswer: 3,
+                    explanation: "La Resolución 40595 establece que se debe mantener una distancia prudente que permita detener el vehículo en caso de una frenada brusca. La regla general es mantener al menos 2 segundos de separación respecto al vehículo que va adelante."
+                },
+                {
+                    question: "De acuerdo con el Decreto 1079 de 2015, ¿cada cuánto tiempo debe renovarse la licencia de conducción para categoría B1 (vehículos particulares)?",
+                    options: [
+                        "Cada 5 años",
+                        "Cada 3 años",
+                        "Cada 10 años",
+                        "Cada 1 año"
+                    ],
+                    correctAnswer: 2,
+                    explanation: "Según el Decreto 1079 de 2015, la licencia de conducción para categoría B1 (vehículos particulares) tiene una vigencia de 10 años para conductores menores de 60 años. Para mayores de 60 años, la vigencia es de 5 años."
+                },
+                {
+                    question: "Según la Ley 769 de 2002, ¿en qué casos está permitido el uso de las luces intermitentes o balizas de un vehículo?",
+                    options: [
+                        "Solo en caso de emergencia o cuando el vehículo esté detenido en la vía",
+                        "Cuando se estacione en lugares no permitidos",
+                        "Para indicar que se va a cambiar de carril",
+                        "Para indicar que se va a dar una vuelta en U"
+                    ],
+                    correctAnswer: 0,
+                    explanation: "El artículo 78 de la Ley 769 de 2002 establece que las luces intermitentes o balizas solo deben usarse cuando el vehículo se encuentre detenido en la vía por emergencia o por cualquier otra causa."
+                },
+                {
+                    question: "De acuerdo con la Resolución 40595, ¿qué edad mínima se requiere para obtener una licencia de conducción para motocicletas de baja cilindrada (hasta 125cc)?",
+                    options: [
+                        "14 años",
+                        "16 años",
+                        "18 años",
+                        "21 años"
+                    ],
+                    correctAnswer: 1,
+                    explanation: "La Resolución 40595 establece que la edad mínima para obtener licencia de conducción para motocicletas hasta 125cc es de 16 años. Para motocicletas de mayor cilindrada se requiere tener al menos 18 años."
+                },
+                {
+                    question: "Según el Decreto 1079 de 2015, ¿qué sanción aplica por no portar el SOAT vigente?",
+                    options: [
+                        "Multa equivalente a 15 salarios mínimos legales diarios",
+                        "Multa equivalente a 30 salarios mínimos legales diarios",
+                        "Inmovilización del vehículo",
+                        "Todas las anteriores"
+                    ],
+                    correctAnswer: 3,
+                    explanation: "Según el Decreto 1079 de 2015, no portar el SOAT vigente acarrea multa equivalente a 30 salarios mínimos legales diarios (SMLD) e inmovilización del vehículo."
+                },
+                {
+                    question: "De acuerdo con la Ley 769 de 2002, ¿qué conductores están obligados a utilizar el cinturón de seguridad?",
+                    options: [
+                        "Solo el conductor",
+                        "El conductor y el copiloto",
+                        "Todos los ocupantes del vehículo",
+                        "Solo los ocupantes de los asientos delanteros"
+                    ],
+                    correctAnswer: 2,
+                    explanation: "El artículo 82 de la Ley 769 de 2002 establece que todos los ocupantes de un vehículo deben hacer uso del cinturón de seguridad, tanto en los asientos delanteros como en los traseros."
+                }
+            ],
+            passingScore: 7,
+            totalQuestions: 10,
+            timeLimit: 20 * 60
+        };
 
-  <div id="quizBox" class="card">
-    <div class="timer" id="timer">Tiempo restante: 20:00</div>
-    <div id="quizContent"></div>
-    <button onclick="nextQuestion()" id="nextBtn">Siguiente</button>
-    <button onclick="finishQuiz()" id="finishBtn" style="display:none;background:#007b00">Finalizar</button>
-  </div>
+        // Variables del estado del quiz
+        let currentQuestion = 0;
+        let userAnswers = new Array(quizData.totalQuestions).fill(null);
+        let score = 0;
+        let timeLeft = quizData.timeLimit;
+        let timerInterval = null;
+        let quizStarted = false;
 
-  <div id="result" class="card"></div>
+        // Elementos DOM
+        const startContainer = document.getElementById('start-container');
+        const quizContainer = document.getElementById('quiz-container');
+        const resultsContainer = document.getElementById('results-container');
+        const btnStart = document.getElementById('btn-start');
+        const btnPrev = document.getElementById('btn-prev');
+        const btnNext = document.getElementById('btn-next');
+        const btnSubmit = document.getElementById('btn-submit');
+        const btnRestart = document.getElementById('btn-restart');
+        const timerElement = document.getElementById('timer');
+        const progressBar = document.getElementById('progress-bar');
+        const scoreCircle = document.getElementById('score-circle');
+        const resultFeedback = document.getElementById('result-feedback');
 
-<script>
-  const questions = [
-    {q:"¿Qué ley corresponde al Código Nacional de Tránsito en Colombia?", opts:["Ley 30/1986","Ley 769/2002","Ley 101/1993","Ley 532/1999"], correct:1},
-    {q:"La Resolución 40595 establece lineamientos para:", opts:["Normas de señalización peatonal","Licencias de conducción y exámenes","Velocidades máximas urbanas","Uso obligatorio de cinturón"], correct:1},
-    {q:"El Decreto 1079/2015 compila normativas relacionadas con:", opts:["Transporte terrestre y tránsito","Normas ambientales","Impuestos vehiculares","Operación de transporte aéreo"], correct:0},
-    {q:"Según la Ley 769/2002, conducir bajo efectos de alcohol es:", opts:["Permitido con límites","Totalmente prohibido","Solo prohibido para transporte público","No regulado"], correct:1}
-  ];
+        // Inicialización
+        document.addEventListener('DOMContentLoaded', function() {
+            btnStart.addEventListener('click', startQuiz);
+            btnPrev.addEventListener('click', showPreviousQuestion);
+            btnNext.addEventListener('click', showNextQuestion);
+            btnSubmit.addEventListener('click', submitQuiz);
+            btnRestart.addEventListener('click', restartQuiz);
+            setupAnswerOptions();
+        });
 
-  let current = 0;
-  let answers = [];
-  let timeLeft = 20 * 60;
-  let timerInterval;
+        // Iniciar el quiz
+        function startQuiz() {
+            quizStarted = true;
+            startContainer.style.display = 'none';
+            quizContainer.style.display = 'block';
+            startTimer();
+            showQuestion(currentQuestion);
+        }
 
-  function startQuiz(){
-    document.getElementById("quizBox").style.display = "block";
-    renderQuestion();
-    timerInterval = setInterval(updateTimer,1000);
-  }
+        // Configurar opciones de respuesta
+        function setupAnswerOptions() {
+            const questionContainers = document.querySelectorAll('.question-container');
+            
+            questionContainers.forEach((container, questionIndex) => {
+                const options = container.querySelectorAll('.option');
+                
+                options.forEach((option, optionIndex) => {
+                    option.addEventListener('click', () => {
+                        options.forEach(opt => opt.classList.remove('selected'));
+                        option.classList.add('selected');
+                        userAnswers[questionIndex] = optionIndex;
+                        checkAllQuestionsAnswered();
+                    });
+                });
+            });
+        }
 
-  function updateTimer(){
-    let m = Math.floor(timeLeft / 60);
-    let s = timeLeft % 60;
-    if(s < 10) s = "0" + s;
-    document.getElementById("timer").innerText = `Tiempo restante: ${m}:${s}`;
-    timeLeft--;
-    if(timeLeft < 0){ finishQuiz(); }
-  }
+        // Mostrar pregunta específica
+        function showQuestion(questionIndex) {
+            document.querySelectorAll('.question-container').forEach(container => {
+                container.classList.remove('active');
+            });
+            
+            document.getElementById(`question-${questionIndex + 1}`).classList.add('active');
+            
+            const options = document.querySelectorAll(`#question-${questionIndex + 1} .option`);
+            options.forEach((option, index) => {
+                option.classList.remove('selected');
+                if (userAnswers[questionIndex] === index) {
+                    option.classList.add('selected');
+                }
+            });
+            
+            updateNavigationButtons();
+            updateProgressBar();
+        }
 
-  function renderQuestion(){
-    const q = questions[current];
-    const container = document.getElementById("quizContent");
-    container.innerHTML = `<h3>Pregunta ${current+1} de ${questions.length}</h3>
-      <p class="question">${q.q}</p>`;
-    q.opts.forEach((op,i)=>{
-      container.innerHTML += `<div class="options"><label>
-        <input type="radio" name="opt" value="${i}"> ${op}
-      </label></div>`;
-    });
+        // Mostrar pregunta anterior
+        function showPreviousQuestion() {
+            if (currentQuestion > 0) {
+                currentQuestion--;
+                showQuestion(currentQuestion);
+            }
+        }
 
-    if(current === questions.length-1){
-      document.getElementById("nextBtn").style.display = "none";
-      document.getElementById("finishBtn").style.display = "inline-block";
-    }
-  }
+        // Mostrar siguiente pregunta
+        function showNextQuestion() {
+            if (currentQuestion < quizData.totalQuestions - 1) {
+                currentQuestion++;
+                showQuestion(currentQuestion);
+            }
+        }
 
-  function nextQuestion(){
-    const sel = document.querySelector("input[name='opt']:checked");
-    if(!sel){ alert("Debes seleccionar una opción antes de continuar."); return; }
+        // Actualizar botones de navegación
+        function updateNavigationButtons() {
+            if (currentQuestion === 0) {
+                btnPrev.style.display = 'none';
+            } else {
+                btnPrev.style.display = 'inline-block';
+            }
+            
+            if (currentQuestion === quizData.totalQuestions - 1) {
+                btnNext.style.display = 'none';
+                btnSubmit.style.display = 'inline-block';
+            } else {
+                btnNext.style.display = 'inline-block';
+                btnSubmit.style.display = 'none';
+            }
+        }
 
-    answers[current] = parseInt(sel.value);
-    current++;
-    renderQuestion();
-  }
+        // Actualizar barra de progreso
+        function updateProgressBar() {
+            const progress = ((currentQuestion + 1) / quizData.totalQuestions) * 100;
+            progressBar.style.width = `${progress}%`;
+        }
 
-  function finishQuiz(){
-    clearInterval(timerInterval);
+        // Verificar si todas las preguntas están respondidas
+        function checkAllQuestionsAnswered() {
+            const allAnswered = userAnswers.every(answer => answer !== null);
+            
+            if (allAnswered) {
+                btnSubmit.disabled = false;
+                btnSubmit.style.opacity = '1';
+            } else {
+                btnSubmit.disabled = true;
+                btnSubmit.style.opacity = '0.7';
+            }
+        }
 
-    const sel = document.querySelector("input[name='opt']:checked");
-    if(sel) answers[current] = parseInt(sel.value);
+        // Iniciar temporizador
+        function startTimer() {
+            updateTimerDisplay();
+            
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                updateTimerDisplay();
+                
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    submitQuiz();
+                }
+            }, 1000);
+        }
 
-    let score = 0;
-    questions.forEach((q,i)=>{ if(answers[i] === q.correct) score++; });
+        // Actualizar visualización del temporizador
+        function updateTimerDisplay() {
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            timerElement.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            
+            if (timeLeft <= 60) {
+                timerElement.style.color = '#e74c3c';
+                timerElement.style.fontWeight = 'bold';
+            }
+        }
 
-    const result = document.getElementById("result");
-    result.style.display = "block";
-    result.innerHTML = `<h2>Resultado Final</h2>
-      <p><strong>Puntaje:</strong> ${score} / ${questions.length}</p>
-      <p><strong>Desempeño:</strong> ${((score/questions.length)*100).toFixed(1)}%</p>`;
+        // Enviar quiz para evaluación
+        function submitQuiz() {
+            clearInterval(timerInterval);
+            calculateScore();
+            showResults();
+        }
 
-    document.getElementById("quizBox").style.display = "none";
-  }
-</script>
+        // Calcular puntaje
+        function calculateScore() {
+            score = 0;
+            
+            for (let i = 0; i < quizData.totalQuestions; i++) {
+                if (userAnswers[i] === quizData.questions[i].correctAnswer) {
+                    score++;
+                }
+            }
+        }
+
+        // Mostrar resultados
+        function showResults() {
+            quizContainer.style.display = 'none';
+            resultsContainer.classList.add('active');
+            
+            const scoreValue = document.querySelector('.score-value');
+            scoreValue.textContent = `${score}/${quizData.totalQuestions}`;
+            
+            const passed = score >= quizData.passingScore;
+            
+            if (passed) {
+                scoreCircle.classList.add('score-pass');
+                scoreCircle.classList.remove('score-fail');
+            } else {
+                scoreCircle.classList.add('score-fail');
+                scoreCircle.classList.remove('score-pass');
+            }
+            
+            generateFeedback(passed);
+        }
+
+        // Generar feedback de resultados
+        function generateFeedback(passed) {
+            let feedbackHTML = '';
+            
+            if (passed) {
+                feedbackHTML = `
+                    <p><strong>¡Felicidades! Ha aprobado la evaluación de normativa básica.</strong></p>
+                    <p>Su puntaje: ${score} de ${quizData.totalQuestions} respuestas correctas.</p>
+                    <p>Ha demostrado un conocimiento adecuado de la Resolución 40595, Ley 769/2002 y Decreto 1079/2015.</p>
+                    <p><strong>Recomendaciones:</strong> Continúe actualizando sus conocimientos sobre normativa de tránsito, ya que las leyes pueden cambiar periódicamente.</p>
+                `;
+            } else {
+                feedbackHTML = `
+                    <p><strong>Evaluación no aprobada</strong></p>
+                    <p>Su puntaje: ${score} de ${quizData.totalQuestions} respuestas correctas.</p>
+                    <p>Para aprobar necesita al menos ${quizData.passingScore} respuestas correctas.</p>
+                    <p><strong>Recomendaciones:</strong> Revise los siguientes aspectos de la normativa:</p>
+                    <ul style="text-align: left; margin: 15px 0; padding-left: 20px;">
+                        <li>Límites de velocidad en zona urbana</li>
+                        <li>Documentación obligatoria para conductores</li>
+                        <li>Sanciones por conducir en estado de embriaguez</li>
+                        <li>Uso correcto de elementos de seguridad</li>
+                    </ul>
+                    <p>Le sugerimos estudiar nuevamente la normativa antes de intentar otra evaluación.</p>
+                `;
+            }
+            
+            feedbackHTML += `<p style="margin-top: 20px;"><button id="btn-details" class="btn-next" style="padding: 10px 20px; font-size: 14px;">Ver detalles de respuestas</button></p>`;
+            
+            resultFeedback.innerHTML = feedbackHTML;
+            
+            document.getElementById('btn-details').addEventListener('click', showAnswerDetails);
+        }
+
+        // Mostrar detalles de respuestas
+        function showAnswerDetails() {
+            let detailsHTML = '<div style="text-align: left; margin-top: 30px; padding: 20px; background-color: #f8f9fa; border-radius: 8px;">';
+            detailsHTML += '<h3 style="margin-bottom: 15px; color: #2c3e50;">Detalle de respuestas:</h3>';
+            
+            for (let i = 0; i < quizData.totalQuestions; i++) {
+                const question = quizData.questions[i];
+                const userAnswer = userAnswers[i];
+                const isCorrect = userAnswer === question.correctAnswer;
+                
+                detailsHTML += `
+                    <div style="margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid #e1e5eb;">
+                        <p><strong>Pregunta ${i + 1}:</strong> ${question.question}</p>
+                        <p><strong>Su respuesta:</strong> ${userAnswer !== null ? question.options[userAnswer] : 'Sin responder'} 
+                        <span style="color: ${isCorrect ? '#27ae60' : '#e74c3c'}; font-weight: bold;">
+                        (${isCorrect ? 'Correcta' : 'Incorrecta'})</span></p>
+                        ${!isCorrect ? `<p><strong>Respuesta correcta:</strong> ${question.options[question.correctAnswer]}</p>` : ''}
+                        <p><strong>Explicación:</strong> ${question.explanation}</p>
+                    </div>
+                `;
+            }
+            
+            detailsHTML += '</div>';
+            
+            resultFeedback.innerHTML = detailsHTML + 
+                '<p style="margin-top: 20px;"><button id="btn-back-to-results" class="btn-prev">Volver al resumen</button></p>';
+            
+            document.getElementById('btn-back-to-results').addEventListener('click', function() {
+                generateFeedback(score >= quizData.passingScore);
+            });
+        }
+
+        // Reiniciar quiz
+        function restartQuiz() {
+            currentQuestion = 0;
+            userAnswers = new Array(quizData.totalQuestions).fill(null);
+            score = 0;
+            timeLeft = quizData.timeLimit;
+            quizStarted = false;
+            
+            timerElement.textContent = '20:00';
+            timerElement.style.color = '#2c3e50';
+            timerElement.style.fontWeight = '600';
+            
+            document.querySelectorAll('.option').forEach(option => {
+                option.classList.remove('selected', 'correct', 'incorrect');
+            });
+            
+            progressBar.style.width = '0%';
+            
+            resultsContainer.classList.remove('active');
+            quizContainer.style.display = 'none';
+            startContainer.style.display = 'block';
+            
+            btnPrev.style.display = 'inline-block';
+            btnNext.style.display = 'inline-block';
+            btnSubmit.style.display = 'none';
+            
+            showQuestion(currentQuestion);
+            
+            if (timerInterval) {
+                clearInterval(timerInterval);
+            }
+        }
+    </script>
 </body>
 </html>
